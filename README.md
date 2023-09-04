@@ -13,13 +13,13 @@ The `pep440` Python package provides utilities to help manage versioning of proj
 To install `pep440`, simply use [Poetry](https://python-poetry.org/):
 
 ```bash
-poetry add pep440
+poetry add pep440-utility
 ```
 
 Alternatively, you can install it from PyPI using `pip`:
 
 ```bash
-pip install pep440
+pip install pep440-utility
 ```
 
 ## Usage
