@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pep440"
+name = "pep440-utility"
 version = "0.1.0"
 description = "A utility for transitioning between version numbers based on PEP 440."
 authors = ["Azat <8280770+azataiot@users.noreply.github.com>"]
