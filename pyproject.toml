@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "pep440"
+version = "0.1.0"
+description = "A utility for transitioning between version numbers based on PEP 440."
+authors = ["Azat <8280770+azataiot@users.noreply.github.com>"]
+maintainers = ["Azat <8280770+azataiot@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/azataiot/pep440"
+keywords = ["packaging", "pep440", "versioning"]
+classifiers = [
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11"
+]
+packages = [
+    { include = "pep440", from = "src" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
