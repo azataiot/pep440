@@ -86,15 +86,19 @@ def get_next_pep440_version(current_version: str, release_type: str) -> str:
     components = match.groupdict()
     release_segments = components["release"].split(".")
 
-    # Handle single-segment versions
+    # Check for improperly formatted version string
+    if (
+        any(not segment.isdigit() for segment in release_segments)
+        or len(release_segments) > 3
+    ):
+        raise ValueError(f"Invalid release segment format for {current_version}")
+
     while len(release_segments) < 3:
         release_segments.append("0")
 
-    major, minor, patch = map(int, release_segments)
-
-    # Handle the epoch
+    major, minor, *remaining = map(int, release_segments)
+    patch = remaining[0] if remaining else 0
     epoch = components["epoch"]
-    epoch_str = f"{epoch}!" if epoch else ""
 
     pre_l = components["pre_l"]
     pre_n = components["pre_n"]
@@ -103,40 +107,52 @@ def get_next_pep440_version(current_version: str, release_type: str) -> str:
     dev_l = components["dev_l"]
     dev_n = components["dev_n"]
 
+    # Epoch prefix
+    epoch_prefix = f"{epoch}!" if epoch else ""
+
     # From dev
     if dev_l:
         if release_type == "dev":
-            return f"{epoch_str}{major}.{minor}.{patch}.dev{int(dev_n) + 1}"
+            return f"{epoch_prefix}{major}.{minor}.{patch}.dev{int(dev_n) + 1}"
         elif release_type in ["a", "b", "rc"]:
-            return f"{epoch_str}{major}.{minor}.{patch}.{release_type}1"
+            return f"{epoch_prefix}{major}.{minor}.{patch}.{release_type}1"
         elif release_type == "final":
-            return f"{epoch_str}{major}.{minor}.{patch}"
+            return f"{epoch_prefix}{major}.{minor}.{patch}"
         elif release_type == "post":
-            return f"{epoch_str}{major}.{minor}.{patch + 1}.post1"
+            return f"{epoch_prefix}{major}.{minor}.{patch + 1}.post1"
 
     # From alpha, beta, rc
     elif pre_l:
         if release_type in ["a", "b", "rc"]:
             if release_type == pre_l:
-                return f"{epoch_str}{major}.{minor}.{patch}.{release_type}{int(pre_n) + 1}"  # noqa: E501
+                return f"{epoch_prefix}{major}.{minor}.{patch}.{release_type}{int(pre_n) + 1}"  # noqa: E501
             else:
-                return f"{epoch_str}{major}.{minor}.{patch}.{release_type}1"
+                return f"{epoch_prefix}{major}.{minor}.{patch}.{release_type}1"
         elif release_type == "final":
-            return f"{epoch_str}{major}.{minor}.{patch}"
-        elif release_type in ["dev", "post"]:
-            return f"{epoch_str}{major}.{minor}.{patch + 1}.{release_type}1"
+            return f"{epoch_prefix}{major}.{minor}.{patch}"
+        elif release_type == "dev":
+            return f"{epoch_prefix}{major}.{minor}.{patch + 1}.dev1"
+        elif release_type == "post":
+            return f"{epoch_prefix}{major}.{minor}.{patch + 1}.post1"
 
     # From final version
     elif not pre_l and not post_l and not dev_l:
-        return f"{epoch_str}{major}.{minor}.{patch + 1}.{release_type}1"
+        if release_type == "a":
+            return f"{epoch_prefix}{major}.{minor}.{patch + 1}.a1"
+        elif release_type == "dev":
+            return f"{epoch_prefix}{major}.{minor}.{patch + 1}.dev1"
+        elif release_type == "post":
+            return f"{epoch_prefix}{major}.{minor}.{patch + 1}.post1"
+        elif release_type in ["b", "rc"]:
+            return f"{epoch_prefix}{major}.{minor}.{patch + 1}.{release_type}1"
 
     # From post-release
     elif post_l:
         if release_type == "post":
-            return f"{epoch_str}{major}.{minor}.{patch}.post{int(post_n) + 1}"
+            return f"{epoch_prefix}{major}.{minor}.{patch}.post{int(post_n) + 1}"
         elif release_type == "final":
-            return f"{epoch_str}{major}.{minor}.{patch + 1}"
+            return f"{epoch_prefix}{major}.{minor}.{patch + 1}"
         elif release_type in ["dev", "a", "b", "rc"]:
-            return f"{epoch_str}{major}.{minor}.{patch + 1}.{release_type}1"
+            return f"{epoch_prefix}{major}.{minor}.{patch + 1}.{release_type}1"
 
     raise ValueError(f"Invalid transition from {current_version} to {release_type}")
