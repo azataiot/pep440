@@ -139,3 +139,9 @@ update-branch-dev: ensure-dev-branch
 	else \
 		echo "Uncommitted changes found. Please commit your changes before updating dev."; \
 	fi
+
+## Run tests
+test:
+	@echo "Running tests..."
+	@poetry run pytest
+	@echo "Done!"
