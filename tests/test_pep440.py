@@ -1,5 +1,4 @@
 import pytest
-
 from src.pep440 import get_next_pep440_version
 
 # Test cases to validate transitions based on the current version and next desired stage.

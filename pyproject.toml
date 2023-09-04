@@ -15,7 +15,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11"
 ]
 packages = [
-    { include = "pep440", from = "src" },
+    { include = "pep440"},
 ]
 
 [tool.poetry.dependencies]
